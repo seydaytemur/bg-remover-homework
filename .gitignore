@@ -1,0 +1,26 @@
+# Sanal Ortamlar
+.venv/
+venv/
+env/
+
+# IDE Ayarları
+.idea/
+.vscode/
+
+# Python Önbellekleri
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Hassas Dosyalar
+.env
+.env.*
+
+# Model Dosyaları (rembg tarafından indirilen modeller büyük olabilir)
+u2net.onnx
+u2net_human_seg.onnx
+
+# Geçici Çıktılar
+*.png
+!app.py
