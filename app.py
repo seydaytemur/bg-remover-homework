@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from tkinter import filedialog, messagebox
-from PIL import Image
+from PIL import Image, ImageOps
 import cv2
 import numpy as np
 import io
@@ -101,6 +101,7 @@ class BackgroundRemoverApp(ctk.CTk):
         if file_path:
             self.input_image_path = file_path
             img = Image.open(file_path)
+            img = ImageOps.exif_transpose(img) # EXIF rotasyonunu düzelt
             
             # Önizleme boyutlandırma
             preview_img = self.resize_for_preview(img)
@@ -134,7 +135,7 @@ class BackgroundRemoverApp(ctk.CTk):
         self.progress_bar.configure(mode="indeterminate")
         self.progress_bar.start()
         
-        self.status_label.configure(text="İşleniyor (Adım 1/2): GrabCut (Dikdörtgen) hesaplanıyor. Lütfen bekleyin...")
+        self.status_label.configure(text="İşleniyor: OpenCV (GrabCut) algoritması resimdeki tüm objeleri tarıyor. Lütfen bekleyin...")
         
         # Kullanıcının net görebilmesi için işlemi büyük kutuya da yaz!
         # Hata önlemek için geçici 1x1 şeffaf görsel
@@ -149,10 +150,16 @@ class BackgroundRemoverApp(ctk.CTk):
 
     def remove_background_thread(self):
         try:
-            # OpenCV ile resmi oku (Türkçe dosya yolları için numpy ile okuyup imdecode yapıyoruz)
-            img_array = np.fromfile(self.input_image_path, np.uint8)
-            img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
-            if img is None:
+            # OpenCV ile doğrudan okumak yerine Pillow ile okuyup EXIF rotasyonunu düzeltiyoruz.
+            try:
+                pil_img = Image.open(self.input_image_path)
+                pil_img = ImageOps.exif_transpose(pil_img) # Telefon kamerası vb. EXIF yan yatmalarını 90 derece düzelt
+                if pil_img.mode != 'RGB':
+                    pil_img = pil_img.convert('RGB')
+                
+                # Pillow'dan numpy matrisine çevir ve OpenCV'nin BGR formatına uyarla
+                img = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
+            except Exception as e:
                 raise ValueError("Görsel yüklenemedi. Dosya yolunu veya formatını kontrol ediniz.")
 
             # Optimizasyon: Çok büyük resimlerde GrabCut'ın donmasını engellemek için küçült
@@ -169,28 +176,13 @@ class BackgroundRemoverApp(ctk.CTk):
             bgdModel = np.zeros((1, 65), np.float64)
             fgdModel = np.zeros((1, 65), np.float64)
             
-            # Olası ilgi alanını merkeze oturt (Kenarlardan daha fazla pay ver)
+            # Adımlar teke indiği için UI bildirimini kaldırıyoruz ve tüm işi GrabCut dikdörtgen hesaplamasına devrediyoruz.
+            # Olası ilgi alanını merkeze oturt (Kenarlardan daha az pay ver ki objelerin kenarları kesilmesin - %5)
             height, width = img.shape[:2]
-            rect = (int(width * 0.15), int(height * 0.1), int(width * 0.7), int(height * 0.8))
+            rect = (int(width * 0.05), int(height * 0.05), int(width * 0.9), int(height * 0.9))
             
-            # İlk tahmini dikdörtgen ile yap (5 döngü)
-            cv2.grabCut(img_rgb, mask, rect, bgdModel, fgdModel, 5, cv2.GC_INIT_WITH_RECT)
-            
-            # Arayüze 2. adım bilgisini yolla
-            self.after(0, lambda: self.status_label.configure(text="İşleniyor (Adım 2/2): Derin maske katmanları analiz ediliyor, pikseller taranıyor..."))
-            
-            # Maskeyi iyileştir: Resmin TAM MERKEZİNİ "Kesin Ön Plan" olarak işaretle (GC_FGD = 1)
-            center_x, center_y = width // 2, height // 2
-            cv2.circle(mask, (center_x, center_y), radius=int(min(width, height) * 0.25), color=cv2.GC_FGD, thickness=-1)
-            
-            # Maskeyi iyileştir: Resmin EN KENAR KÖŞELERİNİ "Kesin Arka Plan" olarak işaretle (GC_BGD = 0)
-            cv2.rectangle(mask, (0, 0), (width, int(height * 0.1)), cv2.GC_BGD, thickness=-1) # Üst şerit
-            cv2.rectangle(mask, (0, height - int(height * 0.05)), (width, height), cv2.GC_BGD, thickness=-1) # Alt ince şerit
-            cv2.rectangle(mask, (0, 0), (int(width * 0.1), height), cv2.GC_BGD, thickness=-1) # Sol şerit
-            cv2.rectangle(mask, (width - int(width * 0.1), 0), (width, height), cv2.GC_BGD, thickness=-1) # Sağ şerit
-            
-            # Maske üzerinden algoritmayı 10 kez daha çalıştırarak hatları kesinleştir (GC_INIT_WITH_MASK)
-            cv2.grabCut(img_rgb, mask, None, bgdModel, fgdModel, 10, cv2.GC_INIT_WITH_MASK)
+            # Tüm işi doğrudan GrabCut algoritmasının kendi zekasına (Komşuluk analizine) bırakıyoruz (10 Döngü)
+            cv2.grabCut(img_rgb, mask, rect, bgdModel, fgdModel, 10, cv2.GC_INIT_WITH_RECT)
             
             # Ön plan (1, 3) ve arka plan (0, 2) piksellerini ayırarak 0 ve 1'lerden oluşan nihai maskeyi bul
             mask2 = np.where((mask == 2) | (mask == 0), 0, 1).astype('uint8')
