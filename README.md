@@ -1,10 +1,8 @@
-# AI Background Remover
+# 🖼️ Background Removal Tool
 
-An AI-powered background removal desktop application prepared for the Image Processing course assignment.
+This project is a Python-based desktop application developed for an Image Processing coursework. It does not use Artificial Intelligence; the background removal process is entirely based on the OpenCV GrabCut algorithm (GMM - Gaussian Mixture Models).
 
-## Features
-- **Modern Interface**: Sleek and dark mode supported design with CustomTkinter.
-- **Threading Support**: The application does not freeze during processing.
-- **Preview**: View original and processed images side by side.
-- **Format Support**: Compatible with JPEG, JPG, and PNG formats.
-
+### 🚀 Features
+- **OpenCV Operations:** Offline, smooth `cv2.grabCut` analysis.
+- **Smart EXIF Solution:** Automatically corrects phone vertical and horizontal (Rotation) metadata.
+- **Memory Optimization:** Memory and sizing issues encountered during consecutive image uploads are prevented using a "Dummy Image" logic.

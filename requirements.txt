@@ -1,4 +1,4 @@
 customtkinter
-rembg
 Pillow
-onnxruntime
+opencv-python
+numpy
