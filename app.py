@@ -16,7 +16,10 @@ class BackgroundRemoverApp(ctk.CTk):
 
         # Modern Tema Ayarları
         ctk.set_appearance_mode("dark")
-        ctk.set_default_color_theme("blue")
+        ctk.set_default_color_theme("dark-blue")
+        
+        # Ana arkaplan için çok hafif gradient/pastel renk uyarlanması
+        self.configure(fg_color="#1E1E24")
 
         # Değişkenler
         self.input_image_path = None
@@ -35,47 +38,47 @@ class BackgroundRemoverApp(ctk.CTk):
         self.header_frame = ctk.CTkFrame(self.main_frame, fg_color="transparent")
         self.header_frame.pack(fill="x", pady=(0, 20))
         
-        self.label_title = ctk.CTkLabel(self.header_frame, text="Arka Plan Temizleme Aracı", font=ctk.CTkFont(size=28, weight="bold"))
+        self.label_title = ctk.CTkLabel(self.header_frame, text="✨ Arka Plan Temizleme Aracı", font=ctk.CTkFont(family="Roboto", size=32, weight="bold"), text_color="#E0E0E0")
         self.label_title.pack()
         
-        self.label_subtitle = ctk.CTkLabel(self.header_frame, text="Görüntü İşleme (OpenCV) algoritmaları ile saniyeler içinde arka planı temizleyin", font=ctk.CTkFont(size=14))
-        self.label_subtitle.pack()
+        self.label_subtitle = ctk.CTkLabel(self.header_frame, text="Görüntü İşleme (OpenCV) algoritmaları ile saniyeler içinde arka planı temizleyin", font=ctk.CTkFont(family="Roboto", size=15), text_color="#A0A0A0")
+        self.label_subtitle.pack(pady=(5, 0))
 
         # Görsel Alanı (Giriş ve Çıkış Yan Yana)
         self.image_area = ctk.CTkFrame(self.main_frame, fg_color="transparent")
         self.image_area.pack(fill="both", expand=True)
 
         # Giriş Görseli Paneli
-        self.input_frame = ctk.CTkFrame(self.image_area)
+        self.input_frame = ctk.CTkFrame(self.image_area, fg_color="#2B2B36", corner_radius=15, border_width=1, border_color="#3A3A4A")
         self.input_frame.pack(side="left", fill="both", expand=True, padx=(0, 10))
         
-        self.input_label = ctk.CTkLabel(self.input_frame, text="Orijinal Görsel", font=ctk.CTkFont(weight="bold"))
-        self.input_label.pack(pady=10)
+        self.input_label = ctk.CTkLabel(self.input_frame, text="📸 Orijinal Görsel", font=ctk.CTkFont(family="Roboto", size=16, weight="bold"), text_color="#CCCCCC")
+        self.input_label.pack(pady=(15, 5))
         
-        self.input_preview = ctk.CTkLabel(self.input_frame, text="Lütfen bir görsel seçin", width=400, height=400, fg_color="gray15", corner_radius=10)
-        self.input_preview.pack(padx=20, pady=10, fill="both", expand=True)
+        self.input_preview = ctk.CTkLabel(self.input_frame, text="Lütfen bir görsel seçin", width=400, height=400, fg_color="#1F1F28", corner_radius=15)
+        self.input_preview.pack(padx=20, pady=(5, 20), fill="both", expand=True)
 
         # Çıkış Görseli Paneli
-        self.output_frame = ctk.CTkFrame(self.image_area)
+        self.output_frame = ctk.CTkFrame(self.image_area, fg_color="#2B2B36", corner_radius=15, border_width=1, border_color="#3A3A4A")
         self.output_frame.pack(side="right", fill="both", expand=True, padx=(10, 0))
         
-        self.output_label = ctk.CTkLabel(self.output_frame, text="Sonuç", font=ctk.CTkFont(weight="bold"))
-        self.output_label.pack(pady=10)
+        self.output_label = ctk.CTkLabel(self.output_frame, text="🎯 Sonuç", font=ctk.CTkFont(family="Roboto", size=16, weight="bold"), text_color="#CCCCCC")
+        self.output_label.pack(pady=(15, 5))
         
-        self.output_preview = ctk.CTkLabel(self.output_frame, text="İşlemden sonra burada görünecek", width=400, height=400, fg_color="gray15", corner_radius=10)
-        self.output_preview.pack(padx=20, pady=10, fill="both", expand=True)
+        self.output_preview = ctk.CTkLabel(self.output_frame, text="İşlemden sonra burada görünecek", width=400, height=400, fg_color="#1F1F28", corner_radius=15)
+        self.output_preview.pack(padx=20, pady=(5, 20), fill="both", expand=True)
 
         # Kontrol Paneli
-        self.controls_frame = ctk.CTkFrame(self.main_frame, height=100)
+        self.controls_frame = ctk.CTkFrame(self.main_frame, height=90, fg_color="#2B2B36", corner_radius=15, border_width=1, border_color="#3A3A4A")
         self.controls_frame.pack(fill="x", pady=20)
 
-        self.btn_select = ctk.CTkButton(self.controls_frame, text="Görsel Seç", height=40, font=ctk.CTkFont(size=14, weight="bold"), command=self.select_image)
+        self.btn_select = ctk.CTkButton(self.controls_frame, text="🖼️ Görsel Seç", height=45, corner_radius=8, font=ctk.CTkFont(family="Roboto", size=15, weight="bold"), command=self.select_image, fg_color="#3498DB", hover_color="#2980B9")
         self.btn_select.pack(side="left", expand=True, padx=20, pady=20)
 
-        self.btn_remove = ctk.CTkButton(self.controls_frame, text="Arka Planı Sil", height=40, font=ctk.CTkFont(size=14, weight="bold"), command=self.start_removal, state="disabled", fg_color="#2ecc71", hover_color="#27ae60")
+        self.btn_remove = ctk.CTkButton(self.controls_frame, text="✂️ Arka Planı Sil", height=45, corner_radius=8, font=ctk.CTkFont(family="Roboto", size=15, weight="bold"), command=self.start_removal, state="disabled", fg_color="#2ECC71", hover_color="#27AE60", text_color_disabled="#E0E0E0")
         self.btn_remove.pack(side="left", expand=True, padx=20, pady=20)
 
-        self.btn_save = ctk.CTkButton(self.controls_frame, text="Kaydet", height=40, font=ctk.CTkFont(size=14, weight="bold"), command=self.save_image, state="disabled")
+        self.btn_save = ctk.CTkButton(self.controls_frame, text="💾 Kaydet", height=45, corner_radius=8, font=ctk.CTkFont(family="Roboto", size=15, weight="bold"), command=self.save_image, state="disabled", fg_color="#9B59B6", hover_color="#8E44AD", text_color_disabled="#E0E0E0")
         self.btn_save.pack(side="left", expand=True, padx=20, pady=20)
 
         # İlerleme Çubuğu Area
@@ -88,11 +91,11 @@ class BackgroundRemoverApp(ctk.CTk):
         self.progress_bar.pack_forget() # Başlangıçta gizli
 
         # Durum Çubuğu
-        self.status_bar = ctk.CTkFrame(self, height=30, fg_color="gray10")
+        self.status_bar = ctk.CTkFrame(self, height=35, fg_color="#18181D", corner_radius=0)
         self.status_bar.pack(side="bottom", fill="x")
         
-        self.status_label = ctk.CTkLabel(self.status_bar, text="Hazır", font=ctk.CTkFont(size=12))
-        self.status_label.pack(side="left", padx=20)
+        self.status_label = ctk.CTkLabel(self.status_bar, text="✅ Hazır", font=ctk.CTkFont(family="Roboto", size=13), text_color="#AAAAAA")
+        self.status_label.pack(side="left", padx=20, pady=5)
 
     def select_image(self):
         if self.processing: return
@@ -135,12 +138,12 @@ class BackgroundRemoverApp(ctk.CTk):
         self.progress_bar.configure(mode="indeterminate")
         self.progress_bar.start()
         
-        self.status_label.configure(text="İşleniyor: OpenCV (GrabCut) algoritması resimdeki tüm objeleri tarıyor. Lütfen bekleyin...")
+        self.status_label.configure(text="⚙️ İşleniyor: OpenCV (GrabCut) algoritması resimdeki tüm objeleri tarıyor. Lütfen bekleyin...")
         
         # Kullanıcının net görebilmesi için işlemi büyük kutuya da yaz!
         # Hata önlemek için geçici 1x1 şeffaf görsel
         dummy_img = ctk.CTkImage(light_image=Image.new("RGBA", (1, 1), (255, 255, 255, 0)), size=(1, 1))
-        self.output_preview.configure(image=dummy_img, text="⏳ İŞLEM BAŞLADI\nLütfen bekleyin, pikseller taranıyor...")
+        self.output_preview.configure(image=dummy_img, text="⌛ İŞLEM BAŞLADI\n\nLütfen bekleyin, pikseller taranıyor...", font=ctk.CTkFont(family="Roboto", size=16, weight="bold"), text_color="#F39C12")
         self.update_idletasks() # UI'nin thread'e girmeden önce kendini yenilemesini zorunlu kıl
         
         # Thread başlat
