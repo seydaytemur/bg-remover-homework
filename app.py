@@ -1,7 +1,8 @@
 import customtkinter as ctk
 from tkinter import filedialog, messagebox
 from PIL import Image
-from rembg import remove
+import cv2
+import numpy as np
 import io
 import os
 import threading
@@ -10,7 +11,7 @@ class BackgroundRemoverApp(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("AI Arka Plan Silici")
+        self.title("Arka Plan Kaldırma Aracı")
         self.geometry("1000x700")
 
         # Modern Tema Ayarları
@@ -34,10 +35,10 @@ class BackgroundRemoverApp(ctk.CTk):
         self.header_frame = ctk.CTkFrame(self.main_frame, fg_color="transparent")
         self.header_frame.pack(fill="x", pady=(0, 20))
         
-        self.label_title = ctk.CTkLabel(self.header_frame, text="AI Background Remover", font=ctk.CTkFont(size=28, weight="bold"))
+        self.label_title = ctk.CTkLabel(self.header_frame, text="Arka Plan Temizleme Aracı", font=ctk.CTkFont(size=28, weight="bold"))
         self.label_title.pack()
         
-        self.label_subtitle = ctk.CTkLabel(self.header_frame, text="Yapay zeka ile saniyeler içinde arka planı temizleyin", font=ctk.CTkFont(size=14))
+        self.label_subtitle = ctk.CTkLabel(self.header_frame, text="Görüntü İşleme (OpenCV) algoritmaları ile saniyeler içinde arka planı temizleyin", font=ctk.CTkFont(size=14))
         self.label_subtitle.pack()
 
         # Görsel Alanı (Giriş ve Çıkış Yan Yana)
@@ -105,8 +106,12 @@ class BackgroundRemoverApp(ctk.CTk):
             preview_img = self.resize_for_preview(img)
             ctk_img = ctk.CTkImage(light_image=preview_img, dark_image=preview_img, size=preview_img.size)
             
+            # Temizlik - Askıda kalmayı önlemek için yeni resim eklendiğinde eski sonuçları GUI'den düşür
+            # CustomTkinter'da image=None hatası ("pyimage doesn't exist") yaşanmaması için boş bir resim ataması
+            empty_img = ctk.CTkImage(light_image=Image.new("RGBA", (1, 1), (255, 255, 255, 0)), size=(1, 1))
+            self.output_image_data = None
             self.input_preview.configure(image=ctk_img, text="")
-            self.output_preview.configure(image="", text="İşlemden sonra burada görünecek")
+            self.output_preview.configure(image=empty_img, text="İşlemden sonra burada görünecek")
             self.btn_remove.configure(state="normal")
             self.btn_save.configure(state="disabled")
             self.status_label.configure(text=f"Dosya yüklendi: {os.path.basename(file_path)}")
@@ -129,7 +134,13 @@ class BackgroundRemoverApp(ctk.CTk):
         self.progress_bar.configure(mode="indeterminate")
         self.progress_bar.start()
         
-        self.status_label.configure(text="İşleniyor... Lütfen bekleyin. (İlk çalıştırmada yapay zeka modeli indirilebilir)")
+        self.status_label.configure(text="İşleniyor (Adım 1/2): GrabCut (Dikdörtgen) hesaplanıyor. Lütfen bekleyin...")
+        
+        # Kullanıcının net görebilmesi için işlemi büyük kutuya da yaz!
+        # Hata önlemek için geçici 1x1 şeffaf görsel
+        dummy_img = ctk.CTkImage(light_image=Image.new("RGBA", (1, 1), (255, 255, 255, 0)), size=(1, 1))
+        self.output_preview.configure(image=dummy_img, text="⏳ İŞLEM BAŞLADI\nLütfen bekleyin, pikseller taranıyor...")
+        self.update_idletasks() # UI'nin thread'e girmeden önce kendini yenilemesini zorunlu kıl
         
         # Thread başlat
         thread = threading.Thread(target=self.remove_background_thread)
@@ -138,9 +149,63 @@ class BackgroundRemoverApp(ctk.CTk):
 
     def remove_background_thread(self):
         try:
-            with open(self.input_image_path, "rb") as i:
-                input_data = i.read()
-                output_data = remove(input_data)
+            # OpenCV ile resmi oku (Türkçe dosya yolları için numpy ile okuyup imdecode yapıyoruz)
+            img_array = np.fromfile(self.input_image_path, np.uint8)
+            img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+            if img is None:
+                raise ValueError("Görsel yüklenemedi. Dosya yolunu veya formatını kontrol ediniz.")
+
+            # Optimizasyon: Çok büyük resimlerde GrabCut'ın donmasını engellemek için küçült
+            max_dim = 800
+            height, width = img.shape[:2]
+            if max(height, width) > max_dim:
+                scale = max_dim / max(height, width)
+                img = cv2.resize(img, (int(width * scale), int(height * scale)), interpolation=cv2.INTER_AREA)
+
+            img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            
+            # GrabCut için maske ve modeller
+            mask = np.zeros(img.shape[:2], np.uint8)
+            bgdModel = np.zeros((1, 65), np.float64)
+            fgdModel = np.zeros((1, 65), np.float64)
+            
+            # Olası ilgi alanını merkeze oturt (Kenarlardan daha fazla pay ver)
+            height, width = img.shape[:2]
+            rect = (int(width * 0.15), int(height * 0.1), int(width * 0.7), int(height * 0.8))
+            
+            # İlk tahmini dikdörtgen ile yap (5 döngü)
+            cv2.grabCut(img_rgb, mask, rect, bgdModel, fgdModel, 5, cv2.GC_INIT_WITH_RECT)
+            
+            # Arayüze 2. adım bilgisini yolla
+            self.after(0, lambda: self.status_label.configure(text="İşleniyor (Adım 2/2): Derin maske katmanları analiz ediliyor, pikseller taranıyor..."))
+            
+            # Maskeyi iyileştir: Resmin TAM MERKEZİNİ "Kesin Ön Plan" olarak işaretle (GC_FGD = 1)
+            center_x, center_y = width // 2, height // 2
+            cv2.circle(mask, (center_x, center_y), radius=int(min(width, height) * 0.25), color=cv2.GC_FGD, thickness=-1)
+            
+            # Maskeyi iyileştir: Resmin EN KENAR KÖŞELERİNİ "Kesin Arka Plan" olarak işaretle (GC_BGD = 0)
+            cv2.rectangle(mask, (0, 0), (width, int(height * 0.1)), cv2.GC_BGD, thickness=-1) # Üst şerit
+            cv2.rectangle(mask, (0, height - int(height * 0.05)), (width, height), cv2.GC_BGD, thickness=-1) # Alt ince şerit
+            cv2.rectangle(mask, (0, 0), (int(width * 0.1), height), cv2.GC_BGD, thickness=-1) # Sol şerit
+            cv2.rectangle(mask, (width - int(width * 0.1), 0), (width, height), cv2.GC_BGD, thickness=-1) # Sağ şerit
+            
+            # Maske üzerinden algoritmayı 10 kez daha çalıştırarak hatları kesinleştir (GC_INIT_WITH_MASK)
+            cv2.grabCut(img_rgb, mask, None, bgdModel, fgdModel, 10, cv2.GC_INIT_WITH_MASK)
+            
+            # Ön plan (1, 3) ve arka plan (0, 2) piksellerini ayırarak 0 ve 1'lerden oluşan nihai maskeyi bul
+            mask2 = np.where((mask == 2) | (mask == 0), 0, 1).astype('uint8')
+            
+            # RGB'yi RGBA'ya (Saydamlık - Alpha kanalı) çevir
+            rgba = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2RGBA)
+            
+            # Maskeye göre asıl ön planda kalan alanın dışını şeffaf (görünmez) yap
+            rgba[:, :, 3] = mask2 * 255
+            
+            # Arayüzde gösterebilmek ve Pillow ile kaydedebilmek için array'i binary veriye çevir
+            pil_img = Image.fromarray(rgba)
+            img_byte_arr = io.BytesIO()
+            pil_img.save(img_byte_arr, format='PNG')
+            output_data = img_byte_arr.getvalue()
                 
             self.after(0, self.on_processing_complete, output_data)
         except Exception as e:
