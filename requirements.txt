@@ -1,4 +1,4 @@
 customtkinter
 Pillow
-opencv-python
+rembg
 numpy
