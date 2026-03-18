@@ -5,11 +5,14 @@ This project is a Python-based desktop application developed for an Image Proces
 *(As per the coursework requirement, traditional computer vision techniques were substituted with Deep Learning approaches like U-Net for unconstrained environments).*
 
 ### Features
-- **Deep Learning (AI) Core:** Flawless background removal using the pre-trained U-Net based salient object detection model (`rembg`).
-- **Complex Scene Handling:** Effectively segments decoupled objects (like scattered dice) or complex lighting conditions (like selfies) where traditional contrast-based CV methods fail.
-- **Smart EXIF Solution:** Automatically corrects phone vertical and horizontal (Rotation) metadata using PIL.
-- **Memory Optimization:** Memory leaks encountered during consecutive image uploads are prevented using a "Dummy Image" rendering technique.
-- **Modern UI:** Built on CustomTkinter with Soft-UI (Flat Design) principles for an elegant User Experience.
+- **Deep Learning (AI) Core:** Background removal powered by the `u2net` deep learning architecture via `rembg`.
+- **Dynamic Model Selection:** Choose from different pre-trained models (`u2net`, `u2netp`, `u2net_human`) based on your hardware and detail requirements.
+- **Alpha Matting Support:** Enhanced edge smoothing for fine details like hair and complex shapes.
+- **Adjustable Resolution:** Scale processing (500px to 2500px) to balance speed, memory usage, and final quality.
+- **Custom Background Options:** Save your results with Transparent (PNG), White, or Black backgrounds.
+- **Stability & Reset:** Real-time progress feedback and a "Reset AI Session" button for memory cleanup.
+- **Automatic EXIF Orientation:** Built-in rotation correction based on image metadata.
+- **Modern CustomTkinter UI:** A premium, dark-themed responsive interface.
 
 ### How to Run
 Install the necessary deep learning packages and run the application:
