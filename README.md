@@ -5,12 +5,14 @@ This project is a Python-based desktop application developed for an Image Proces
 *(As per the coursework requirement, traditional computer vision techniques were substituted with Deep Learning approaches like U-Net for unconstrained environments).*
 
 ### Features
-- **Deep Learning (AI) Core:** Arka plan temizleme işlemi `u2net` tabanlı derin öğrenme modeli (`rembg`) ile gerçekleştirilir.
-- **Dinamik Model Seçimi:** Kullanıcı, donanımına ve ihtiyacına göre `u2net`, `u2netp` (hafif/hızlı), `u2net_human` gibi modeller arasında geçiş yapabilir.
-- **Alpha Matting (Kenar Yumuşatma):** Saç, tüy ve ince detayların daha kusursuz ayıklanması için alpha matting desteği.
-- **Çözünürlük Kontrolü:** İşlem hızını ve bellek kullanımını optimize etmek için ayarlanabilir çözünürlük (500px - 2500px).
-- **Modern Arayüz:** CustomTkinter ile modern ve kullanıcı dostu tasarım.
-- **Otomatik Rotasyon:** EXIF verilerini kullanarak görsel yönünü otomatik düzeltir.
+- **Deep Learning (AI) Core:** Background removal powered by the `u2net` deep learning architecture via `rembg`.
+- **Dynamic Model Selection:** Choose from different pre-trained models (`u2net`, `u2netp`, `u2net_human`) based on your hardware and detail requirements.
+- **Alpha Matting Support:** Enhanced edge smoothing for fine details like hair and complex shapes.
+- **Adjustable Resolution:** Scale processing (500px to 2500px) to balance speed, memory usage, and final quality.
+- **Custom Background Options:** Save your results with Transparent (PNG), White, or Black backgrounds.
+- **Stability & Reset:** Real-time progress feedback and a "Reset AI Session" button for memory cleanup.
+- **Automatic EXIF Orientation:** Built-in rotation correction based on image metadata.
+- **Modern CustomTkinter UI:** A premium, dark-themed responsive interface.
 
 ### How to Run
 Install the necessary deep learning packages and run the application:
