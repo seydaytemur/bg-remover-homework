@@ -10,7 +10,7 @@ class BackgroundRemoverUI(ctk.CTk):
         super().__init__()
         self.ai_engine = ai_engine
 
-        self.title("Arka Plan Temizleme Aracı")
+        self.title("Arka Plan Kaldırma Aracı")
         self.geometry("1000x800")
 
         # Modern Tema Ayarları
@@ -22,6 +22,10 @@ class BackgroundRemoverUI(ctk.CTk):
         self.input_image_path = None
         self.output_image_data = None
         self.processing = False
+        self.model_var = ctk.StringVar(value="u2net")
+        self.alpha_var = ctk.BooleanVar(value=True)
+        self.res_var = ctk.IntVar(value=1500)
+        self.color_var = ctk.StringVar(value="Transparent")
 
         self.setup_ui()
 
@@ -64,11 +68,75 @@ class BackgroundRemoverUI(ctk.CTk):
         self.output_preview = ctk.CTkLabel(self.output_frame, text="İşlemden sonra burada görünecek", width=400, height=400, fg_color="#1F1F28", corner_radius=15)
         self.output_preview.pack(padx=20, pady=(5, 20), fill="both", expand=True)
 
-        # Kontrol Paneli - Sabit yükseklik kaldırıldı, butonların yükseklik (height) ve iç boşlukları (ipady) artırıldı.
+        # Ayarlar Paneli (Model Seçimi ve Alpha Matting)
+        self.settings_frame = ctk.CTkFrame(self.main_frame, fg_color="#2B2B36", corner_radius=15, border_width=1, border_color="#3A3A4A")
+        self.settings_frame.pack(fill="x", pady=(10, 0))
+
+        self.model_label = ctk.CTkLabel(self.settings_frame, text="🤖 Model Seçimi:", font=ctk.CTkFont(family="Roboto", size=14, weight="bold"))
+        self.model_label.pack(side="left", padx=(20, 10), pady=15)
+
+        self.model_dropdown = ctk.CTkOptionMenu(
+            self.settings_frame, 
+            values=["u2net", "u2netp", "u2net_human", "u2net_cloth_seg"],
+            variable=self.model_var,
+            command=self.update_model,
+            width=150
+        )
+        self.model_dropdown.pack(side="left", padx=10, pady=15)
+
+        self.alpha_switch = ctk.CTkSwitch(
+            self.settings_frame, 
+            text="Kenar Yumuşatma (Alpha Matting)", 
+            variable=self.alpha_var,
+            font=ctk.CTkFont(family="Roboto", size=13)
+        )
+        self.alpha_switch.pack(side="left", padx=30, pady=15)
+
+        self.res_label = ctk.CTkLabel(self.settings_frame, text="📏 Çözünürlük (Max): 1500px", font=ctk.CTkFont(family="Roboto", size=13))
+        self.res_label.pack(side="left", padx=(30, 10), pady=15)
+
+        self.res_slider = ctk.CTkSlider(
+            self.settings_frame, 
+            from_=500, 
+            to=2500, 
+            number_of_steps=20, 
+            variable=self.res_var,
+            command=self.update_res_label,
+            width=200
+        )
+        self.res_slider.pack(side="left", padx=10, pady=15)
+
+        # Ek Ayarlar Paneli (Renk ve Reset)
+        self.extra_settings_frame = ctk.CTkFrame(self.main_frame, fg_color="#2B2B36", corner_radius=15, border_width=1, border_color="#3A3A4A")
+        self.extra_settings_frame.pack(fill="x", pady=(10, 0))
+
+        self.color_label = ctk.CTkLabel(self.extra_settings_frame, text="🎨 Arka Plan Rengi:", font=ctk.CTkFont(family="Roboto", size=14, weight="bold"))
+        self.color_label.pack(side="left", padx=(20, 10), pady=15)
+
+        self.color_dropdown = ctk.CTkOptionMenu(
+            self.extra_settings_frame, 
+            values=["Transparent", "White", "Black"],
+            variable=self.color_var,
+            width=150
+        )
+        self.color_dropdown.pack(side="left", padx=10, pady=15)
+
+        self.btn_reset = ctk.CTkButton(
+            self.extra_settings_frame, 
+            text="🔄 AI Oturumunu Sıfırla", 
+            height=32, 
+            corner_radius=6, 
+            font=ctk.CTkFont(family="Roboto", size=13),
+            command=self.reset_ai_session,
+            fg_color="#D35400",
+            hover_color="#E67E22"
+        )
+        self.btn_reset.pack(side="right", padx=20, pady=15)
+
+        # Kontrol Paneli
         self.controls_frame = ctk.CTkFrame(self.main_frame, fg_color="#2B2B36", corner_radius=15, border_width=1, border_color="#3A3A4A")
         self.controls_frame.pack(fill="x", pady=20)
 
-        # Kutunun içindeki ızgara (pack) yapısını grid veya expand ile düzenleyerek butonların basık durmasını engelliyoruz.
         self.btn_select = ctk.CTkButton(self.controls_frame, text="🖼️ Görsel Seç", height=60, corner_radius=6, font=ctk.CTkFont(family="Arial", size=17, weight="bold"), command=self.select_image, fg_color="#3498DB", hover_color="#2980B9")
         self.btn_select.pack(side="left", fill="both", expand=True, padx=15, pady=15)
 
@@ -102,7 +170,6 @@ class BackgroundRemoverUI(ctk.CTk):
             self.input_image_path = file_path
             img = Image.open(file_path)
             
-            # Önizleme boyutlandırma
             preview_img = self.resize_for_preview(img)
             ctk_img = ctk.CTkImage(light_image=preview_img, dark_image=preview_img, size=preview_img.size)
             
@@ -117,6 +184,30 @@ class BackgroundRemoverUI(ctk.CTk):
     def resize_for_preview(self, img):
         img.thumbnail((400, 400))
         return img
+
+    def update_model(self, selected_model):
+        self.status_label.configure(text=f"Model değiştiriliyor: {selected_model}...")
+        self.update_idletasks()
+        try:
+            self.ai_engine.change_model(selected_model)
+            self.status_label.configure(text=f"✅ Model değiştirildi: {selected_model}")
+        except Exception as e:
+            messagebox.showerror("Hata", f"Model yüklenirken hata oluştu: {str(e)}")
+            self.status_label.configure(text="❌ Model yükleme hatası!")
+
+    def reset_ai_session(self):
+        self.status_label.configure(text="🔄 AI oturumu sıfırlanıyor...")
+        self.update_idletasks()
+        try:
+            self.ai_engine.reset_session()
+            messagebox.showinfo("Başarılı", "AI oturumu başarıyla sıfırlandı. Bellek temizlendi.")
+            self.status_label.configure(text="✅ Oturum sıfırlandı!")
+        except Exception as e:
+            messagebox.showerror("Hata", f"Sıfırlama sırasında hata oluştu: {str(e)}")
+            self.status_label.configure(text="❌ Sıfırlama hatası!")
+
+    def update_res_label(self, value):
+        self.res_label.configure(text=f"📏 Çözünürlük (Max): {int(value)}px")
 
     def start_removal(self):
         if not self.input_image_path or self.processing:
@@ -137,29 +228,31 @@ class BackgroundRemoverUI(ctk.CTk):
         self.output_preview.configure(image=dummy_img, text="⏳ İŞLEM BAŞLADI\n\nLütfen bekleyin...", font=ctk.CTkFont(family="Roboto", size=16, weight="bold"), text_color="#F39C12")
         self.update_idletasks()
         
-        # Thread başlat
-        thread = threading.Thread(target=self.remove_background_thread)
+        thread = threading.Thread(target=self.remove_background_thread, args=(self.alpha_var.get(), self.res_var.get(), self.color_var.get()))
         thread.daemon = True
         thread.start()
 
-    def remove_background_thread(self):
+    def remove_background_thread(self, use_alpha, resolution, bg_color):
         try:
-            # Yapay Zeka (AI Engine) modülü çağırılıyor. Mimari (Monolith) UI'dan ayrıldı.
-            output_data = self.ai_engine.process_image(self.input_image_path)
+            output_data = self.ai_engine.process_image(self.input_image_path, alpha_matting=use_alpha, max_dim=resolution, bg_color=bg_color)
             self.after(0, self.on_processing_complete, output_data)
         except Exception as e:
             self.after(0, self.on_processing_error, str(e))
 
     def on_processing_complete(self, output_data):
-        self.output_image_data = output_data
-        
-        result_img = Image.open(io.BytesIO(output_data))
-        preview_img = self.resize_for_preview(result_img)
-        ctk_img = ctk.CTkImage(light_image=preview_img, dark_image=preview_img, size=preview_img.size)
-        
-        self.output_preview.configure(image=ctk_img, text="")
-        self.finish_processing("✅ İşlem tamamlandı!")
-        self.btn_save.configure(state="normal")
+        try:
+            self.output_image_data = output_data
+            
+            # Sonucu Pillow ile belleğe yüklerken io.BytesIO kullanıyoruz (io import edildi)
+            result_img = Image.open(io.BytesIO(output_data))
+            preview_img = self.resize_for_preview(result_img)
+            ctk_img = ctk.CTkImage(light_image=preview_img, dark_image=preview_img, size=preview_img.size)
+            
+            self.output_preview.configure(image=ctk_img, text="")
+            self.finish_processing("✅ İşlem tamamlandı!")
+            self.btn_save.configure(state="normal")
+        except Exception as e:
+             self.on_processing_error(f"Görüntü oluşturma hatası: {str(e)}")
 
     def on_processing_error(self, error_msg):
         messagebox.showerror("Hata", f"İşlem sırasında bir hata oluştu:\n{error_msg}")
