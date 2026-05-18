@@ -1,0 +1,236 @@
+=== BAŞARIM ANALİZİ BAŞLATILIYOR ===
+
+>>>>> Test için seçilen görsel: C:\Users\aleyn\Desktop\bg-remover-homework\test_gorselleri\zorlu_kenarlar\bisiklet.jpg <<<<<
+
+==================================================
+--- 1. Matematiksel Analiz (Pseudo-Ground Truth) ---
+==================================================
+Referans model (isnet-general-use) ve hedef model (u2net) karşılaştırılıyor...
+Referans maske oluşturuluyor (isnet-general-use) - Bu biraz sürebilir...
+Hedef maske oluşturuluyor (u2net)...
+Sonuçlar:
+  - IoU (Kesişim Bölü Birleşim): 0.5698 (1.0 = Mükemmel Eşleşme)
+  - F1-Score (Dice)          : 0.7260 (1.0 = Mükemmel Eşleşme)
+  -> Yorum: u2net modeli ile referans model arasında belirgin farklar var.
+
+==================================================
+--- 2. Niteliksel Analiz (Zorlu Kenar / Alpha Matting Testi) ---
+==================================================
+Alpha Matting kapalı ve açık durumlar karşılaştırılıyor...
+Normal işlem süresi: 1.38 sn
+Alpha Matting işlem süresi: 4.21 sn
+Karşılaştırma görseli kaydedildi: C:\Users\aleyn\Desktop\bg-remover-homework\test_gorselleri\analiz_sonuclari\karislastirma_bisiklet.jpg
+Lütfen kaydedilen görseli inceleyerek saç/tüy/kenar detaylarındaki iyileşmeyi gözlemleyiniz.
+
+==================================================
+--- 3. Performans Analizi (Çözünürlük Bazlı Hız Ölçümü) ---
+==================================================
+Çözünürlük test ediliyor: ~281x500 piksel
+  -> Ortalama İşlem Süresi: 0.683 saniye
+Çözünürlük test ediliyor: ~563x1000 piksel
+  -> Ortalama İşlem Süresi: 0.680 saniye
+Çözünürlük test ediliyor: ~1126x2000 piksel
+  -> Ortalama İşlem Süresi: 0.809 saniye
+
+>>>>> Test için seçilen görsel: C:\Users\aleyn\Desktop\bg-remover-homework\test_gorselleri\zorlu_kenarlar\hand.jpg <<<<<
+
+==================================================
+--- 1. Matematiksel Analiz (Pseudo-Ground Truth) ---
+==================================================
+Referans model (isnet-general-use) ve hedef model (u2net) karşılaştırılıyor...
+Referans maske oluşturuluyor (isnet-general-use) - Bu biraz sürebilir...
+Hedef maske oluşturuluyor (u2net)...
+Sonuçlar:
+  - IoU (Kesişim Bölü Birleşim): 0.9631 (1.0 = Mükemmel Eşleşme)
+  - F1-Score (Dice)          : 0.9812 (1.0 = Mükemmel Eşleşme)
+  -> Yorum: u2net modeli, daha ağır olan referans modele çok yakın bir başarım gösteriyor.
+
+==================================================
+--- 2. Niteliksel Analiz (Zorlu Kenar / Alpha Matting Testi) ---
+==================================================
+Alpha Matting kapalı ve açık durumlar karşılaştırılıyor...
+Normal işlem süresi: 1.35 sn
+Alpha Matting işlem süresi: 3.50 sn
+Karşılaştırma görseli kaydedildi: C:\Users\aleyn\Desktop\bg-remover-homework\test_gorselleri\analiz_sonuclari\karislastirma_hand.jpg
+Lütfen kaydedilen görseli inceleyerek saç/tüy/kenar detaylarındaki iyileşmeyi gözlemleyiniz.
+
+==================================================
+--- 3. Performans Analizi (Çözünürlük Bazlı Hız Ölçümü) ---
+==================================================
+Çözünürlük test ediliyor: ~333x500 piksel
+  -> Ortalama İşlem Süresi: 0.622 saniye
+Çözünürlük test ediliyor: ~667x1000 piksel
+  -> Ortalama İşlem Süresi: 0.736 saniye
+Çözünürlük test ediliyor: ~1334x2000 piksel
+  -> Ortalama İşlem Süresi: 0.928 saniye
+
+>>>>> Test için seçilen görsel: C:\Users\aleyn\Desktop\bg-remover-homework\test_gorselleri\zorlu_kenarlar\kertenkele.jpg <<<<<
+
+==================================================
+--- 1. Matematiksel Analiz (Pseudo-Ground Truth) ---
+==================================================
+Referans model (isnet-general-use) ve hedef model (u2net) karşılaştırılıyor...
+Referans maske oluşturuluyor (isnet-general-use) - Bu biraz sürebilir...
+Hedef maske oluşturuluyor (u2net)...
+Sonuçlar:
+  - IoU (Kesişim Bölü Birleşim): 0.9489 (1.0 = Mükemmel Eşleşme)
+  - F1-Score (Dice)          : 0.9738 (1.0 = Mükemmel Eşleşme)
+  -> Yorum: u2net modeli, daha ağır olan referans modele çok yakın bir başarım gösteriyor.
+
+==================================================
+--- 2. Niteliksel Analiz (Zorlu Kenar / Alpha Matting Testi) ---
+==================================================
+Alpha Matting kapalı ve açık durumlar karşılaştırılıyor...
+Normal işlem süresi: 1.17 sn
+Alpha Matting işlem süresi: 5.99 sn
+Karşılaştırma görseli kaydedildi: C:\Users\aleyn\Desktop\bg-remover-homework\test_gorselleri\analiz_sonuclari\karislastirma_kertenkele.jpg
+Lütfen kaydedilen görseli inceleyerek saç/tüy/kenar detaylarındaki iyileşmeyi gözlemleyiniz.
+
+==================================================
+--- 3. Performans Analizi (Çözünürlük Bazlı Hız Ölçümü) ---
+==================================================
+Çözünürlük test ediliyor: ~500x375 piksel
+  -> Ortalama İşlem Süresi: 0.592 saniye
+Çözünürlük test ediliyor: ~1000x750 piksel
+  -> Ortalama İşlem Süresi: 0.729 saniye
+Çözünürlük test ediliyor: ~2000x1500 piksel
+  -> Ortalama İşlem Süresi: 0.987 saniye
+
+>>>>> Test için seçilen görsel: C:\Users\aleyn\Desktop\bg-remover-homework\test_gorselleri\zorlu_kenarlar\test_average_dog_1778504808164.png <<<<<
+
+==================================================
+--- 1. Matematiksel Analiz (Pseudo-Ground Truth) ---
+==================================================
+Referans model (isnet-general-use) ve hedef model (u2net) karşılaştırılıyor...
+Referans maske oluşturuluyor (isnet-general-use) - Bu biraz sürebilir...
+Hedef maske oluşturuluyor (u2net)...
+Sonuçlar:
+  - IoU (Kesişim Bölü Birleşim): 0.9644 (1.0 = Mükemmel Eşleşme)
+  - F1-Score (Dice)          : 0.9819 (1.0 = Mükemmel Eşleşme)
+  -> Yorum: u2net modeli, daha ağır olan referans modele çok yakın bir başarım gösteriyor.
+
+==================================================
+--- 2. Niteliksel Analiz (Zorlu Kenar / Alpha Matting Testi) ---
+==================================================
+Alpha Matting kapalı ve açık durumlar karşılaştırılıyor...
+Normal işlem süresi: 0.67 sn
+Alpha Matting işlem süresi: 2.27 sn
+Karşılaştırma görseli kaydedildi: C:\Users\aleyn\Desktop\bg-remover-homework\test_gorselleri\analiz_sonuclari\karislastirma_test_average_dog_1778504808164.png
+Lütfen kaydedilen görseli inceleyerek saç/tüy/kenar detaylarındaki iyileşmeyi gözlemleyiniz.
+
+==================================================
+--- 3. Performans Analizi (Çözünürlük Bazlı Hız Ölçümü) ---
+==================================================
+Çözünürlük test ediliyor: ~500x500 piksel
+  -> Ortalama İşlem Süresi: 0.714 saniye
+Çözünürlük test ediliyor: ~1000x1000 piksel
+  -> Ortalama İşlem Süresi: 0.728 saniye
+Çözünürlük test ediliyor: ~1024x1024 piksel
+  -> Ortalama İşlem Süresi: 0.713 saniye
+
+>>>>> Test için seçilen görsel: C:\Users\aleyn\Desktop\bg-remover-homework\test_gorselleri\zorlu_kenarlar\test_cat_1778504490214.png <<<<<
+
+==================================================
+--- 1. Matematiksel Analiz (Pseudo-Ground Truth) ---
+==================================================
+Referans model (isnet-general-use) ve hedef model (u2net) karşılaştırılıyor...
+Referans maske oluşturuluyor (isnet-general-use) - Bu biraz sürebilir...
+Hedef maske oluşturuluyor (u2net)...
+Sonuçlar:
+  - IoU (Kesişim Bölü Birleşim): 0.9610 (1.0 = Mükemmel Eşleşme)
+  - F1-Score (Dice)          : 0.9801 (1.0 = Mükemmel Eşleşme)
+  -> Yorum: u2net modeli, daha ağır olan referans modele çok yakın bir başarım gösteriyor.
+
+==================================================
+--- 2. Niteliksel Analiz (Zorlu Kenar / Alpha Matting Testi) ---
+==================================================
+Alpha Matting kapalı ve açık durumlar karşılaştırılıyor...
+Normal işlem süresi: 0.69 sn
+Alpha Matting işlem süresi: 2.19 sn
+Karşılaştırma görseli kaydedildi: C:\Users\aleyn\Desktop\bg-remover-homework\test_gorselleri\analiz_sonuclari\karislastirma_test_cat_1778504490214.png
+Lütfen kaydedilen görseli inceleyerek saç/tüy/kenar detaylarındaki iyileşmeyi gözlemleyiniz.
+
+==================================================
+--- 3. Performans Analizi (Çözünürlük Bazlı Hız Ölçümü) ---
+==================================================
+Çözünürlük test ediliyor: ~500x500 piksel
+  -> Ortalama İşlem Süresi: 0.737 saniye
+Çözünürlük test ediliyor: ~1000x1000 piksel
+  -> Ortalama İşlem Süresi: 0.780 saniye
+Çözünürlük test ediliyor: ~1024x1024 piksel
+  -> Ortalama İşlem Süresi: 0.930 saniye
+
+>>>>> Test için seçilen görsel: C:\Users\aleyn\Desktop\bg-remover-homework\test_gorselleri\zorlu_kenarlar\white_cat.jpg <<<<<
+
+==================================================
+--- 1. Matematiksel Analiz (Pseudo-Ground Truth) ---
+==================================================
+Referans model (isnet-general-use) ve hedef model (u2net) karşılaştırılıyor...
+Referans maske oluşturuluyor (isnet-general-use) - Bu biraz sürebilir...
+Hedef maske oluşturuluyor (u2net)...
+Sonuçlar:
+  - IoU (Kesişim Bölü Birleşim): 0.9759 (1.0 = Mükemmel Eşleşme)
+  - F1-Score (Dice)          : 0.9878 (1.0 = Mükemmel Eşleşme)
+  -> Yorum: u2net modeli, daha ağır olan referans modele çok yakın bir başarım gösteriyor.
+
+==================================================
+--- 2. Niteliksel Analiz (Zorlu Kenar / Alpha Matting Testi) ---
+==================================================
+Alpha Matting kapalı ve açık durumlar karşılaştırılıyor...
+Normal işlem süresi: 1.08 sn
+Alpha Matting işlem süresi: 2.67 sn
+Karşılaştırma görseli kaydedildi: C:\Users\aleyn\Desktop\bg-remover-homework\test_gorselleri\analiz_sonuclari\karislastirma_white_cat.jpg
+Lütfen kaydedilen görseli inceleyerek saç/tüy/kenar detaylarındaki iyileşmeyi gözlemleyiniz.
+
+==================================================
+--- 3. Performans Analizi (Çözünürlük Bazlı Hız Ölçümü) ---
+==================================================
+Çözünürlük test ediliyor: ~333x500 piksel
+  -> Ortalama İşlem Süresi: 0.739 saniye
+Çözünürlük test ediliyor: ~667x1000 piksel
+  -> Ortalama İşlem Süresi: 0.734 saniye
+Çözünürlük test ediliyor: ~1333x2000 piksel
+  -> Ortalama İşlem Süresi: 0.912 saniye
+
+>>>>> Test için seçilen görsel: C:\Users\aleyn\Desktop\bg-remover-homework\test_gorselleri\zorlu_kenarlar\wine.jpg <<<<<
+
+==================================================
+--- 1. Matematiksel Analiz (Pseudo-Ground Truth) ---
+==================================================
+Referans model (isnet-general-use) ve hedef model (u2net) karşılaştırılıyor...
+Referans maske oluşturuluyor (isnet-general-use) - Bu biraz sürebilir...
+Hedef maske oluşturuluyor (u2net)...
+Sonuçlar:
+  - IoU (Kesişim Bölü Birleşim): 0.9816 (1.0 = Mükemmel Eşleşme)
+  - F1-Score (Dice)          : 0.9907 (1.0 = Mükemmel Eşleşme)
+  -> Yorum: u2net modeli, daha ağır olan referans modele çok yakın bir başarım gösteriyor.
+
+==================================================
+--- 2. Niteliksel Analiz (Zorlu Kenar / Alpha Matting Testi) ---
+==================================================
+Alpha Matting kapalı ve açık durumlar karşılaştırılıyor...
+Normal işlem süresi: 0.96 sn
+Alpha Matting işlem süresi: 2.48 sn
+Karşılaştırma görseli kaydedildi: C:\Users\aleyn\Desktop\bg-remover-homework\test_gorselleri\analiz_sonuclari\karislastirma_wine.jpg
+Lütfen kaydedilen görseli inceleyerek saç/tüy/kenar detaylarındaki iyileşmeyi gözlemleyiniz.
+
+==================================================
+--- 3. Performans Analizi (Çözünürlük Bazlı Hız Ölçümü) ---
+==================================================
+Çözünürlük test ediliyor: ~282x500 piksel
+  -> Ortalama İşlem Süresi: 0.645 saniye
+Çözünürlük test ediliyor: ~563x1000 piksel
+  -> Ortalama İşlem Süresi: 0.680 saniye
+Çözünürlük test ediliyor: ~1127x2000 piksel
+  -> Ortalama İşlem Süresi: 0.902 saniye
+
+==================================================
+=== GENEL SİSTEM BAŞARISI (TÜM GÖRSELLERİN ORTALAMASI) ===
+==================================================
+Test Edilen Toplam Görsel Sayısı: 7
+Mean IoU (mIoU) Ortalama Başarım : 0.9092
+Mean F1-Score Ortalama Başarım : 0.9459
+-> Hocanıza sunmanız gereken sistem başarımı (Accuracy/Başarım) metriği budur.
+
+=== ANALİZ TAMAMLANDI ===
+Sonuçlar C:\Users\aleyn\Desktop\bg-remover-homework\evaluation_results.txt dosyasına kaydedildi.
